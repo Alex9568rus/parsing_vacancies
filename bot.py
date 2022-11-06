@@ -1,3 +1,4 @@
+from email import message
 import os
 import time
 from typing import Any
@@ -53,11 +54,19 @@ def get_detail(reference):
 bot = telebot.TeleBot(os.getenv('TOKEN'))
 
 
+@bot.message_handler(commands=['start'])
+def greeting(message):
+    bot.send_message(
+        message.chat.id,
+        'Здравствуйте! Напишите, кем Вы хотите работать:'
+    )
+
+
 @bot.message_handler(content_types=['text'])
 def show_info(message):
     """Выдача вакансий на первой странице сайта."""
     references = get_vacancies(position=message)
-    for ref in references:
+    for ref in references[:5]:
         result = get_detail(ref)
         bot.send_message(
             message.chat.id,
